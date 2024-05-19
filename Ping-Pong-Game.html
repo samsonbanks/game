@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsonbanks Ping Pong Game</title>
+    <style>
+        canvas {
+            background-color: red;
+            display: block;
+            margin: 0 auto;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            margin: 50px auto;
+            background-color: #000;
+            border: 2px solid #fff;
+        }
+
+        .score {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 24px;
+        }
+
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2c3e50; /* Background color */
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            margin: 50px auto;
+            background-color: #34495e; /* Canvas background color */
+            border: 2px solid #fff;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* Shadow effect */
+        }
+
+        .score {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 24px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2c3e50; /* Background color */
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            margin: 50px auto;
+            background: linear-gradient(to bottom, #3498db, #2980b9); /* Gradient background */
+            border: 2px solid #fff;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* Shadow effect */
+        }
+
+        .score {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 24px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2c3e50; /* Background color */
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            margin: 50px auto;
+            background: linear-gradient(to bottom, #3498db, #2980b9); /* Gradient background */
+            border: 2px solid #fff;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* Shadow effect */
+        }
+
+        .score {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow effect */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0; /* Background color */
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            margin: 50px auto;
+            background-color: #34495e; /* Canvas background color */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1); /* Shadow effect */
+        }
+
+        .score {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow effect */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <script>document.addEventListener("DOMContentLoaded", function() {
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+    
+        const paddleWidth = 10;
+        const paddleHeight = 100;
+        const ballSize = 20;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height / 2;
+        let ballSpeedX = 5;
+        let ballSpeedY = 5;
+        let player1Y = canvas.height / 2 - paddleHeight / 2;
+        let player2Y = canvas.height / 2 - paddleHeight / 2;
+        const paddleSpeed = 10;
+        let player1Score = 0;
+        let player2Score = 0;
+        let ballColorIndex = 0;
+        const ballColors = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f"];
+        let gameIsOver = false;
+    
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+            ctx.fillStyle = "#3498db";
+            ctx.fillRect(0, player1Y, paddleWidth, paddleHeight);
+            ctx.fillRect(canvas.width - paddleWidth, player2Y, paddleWidth, paddleHeight);
+    
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballSize / 2, 0, Math.PI * 2);
+            ctx.fillStyle = ballColors[ballColorIndex];
+            ctx.shadowColor = "#c0392b";
+            ctx.shadowBlur = 10;
+            ctx.fill();
+    
+            ctx.fillStyle = "#fff";
+            ctx.font = "24px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Player 1: " + player1Score, canvas.width / 4, 40);
+            ctx.fillText("Player 2: " + player2Score, (3 * canvas.width) / 4, 40);
+    
+            if (gameIsOver) {
+                // Display result button
+                document.getElementById("resultButton").style.display = "block";
+            } else {
+                // Hide result button during gameplay
+                document.getElementById("resultButton").style.display = "none";
+            }
+    
+            if (!gameIsOver) {
+                ballX += ballSpeedX;
+                ballY += ballSpeedY;
+    
+                if (ballY - ballSize / 2 <= 0 || ballY + ballSize / 2 >= canvas.height) {
+                    ballSpeedY = -ballSpeedY;
+                }
+    
+                if (
+                    (ballX - ballSize / 2 <= paddleWidth && ballY >= player1Y && ballY <= player1Y + paddleHeight) ||
+                    (ballX + ballSize / 2 >= canvas.width - paddleWidth && ballY >= player2Y && ballY <= player2Y + paddleHeight)
+                ) {
+                    ballSpeedX = -ballSpeedX;
+                }
+    
+                if (keyState[87]) {
+                    player1Y -= paddleSpeed;
+                } else if (keyState[83]) {
+                    player1Y += paddleSpeed;
+                }
+    
+                if (keyState[38]) {
+                    player2Y -= paddleSpeed;
+                } else if (keyState[40]) {
+                    player2Y += paddleSpeed;
+                }
+    
+                if (player1Y < 0) {
+                    player1Y = 0;
+                } else if (player1Y + paddleHeight > canvas.height) {
+                    player1Y = canvas.height - paddleHeight;
+                }
+    
+                if (player2Y < 0) {
+                    player2Y = 0;
+                } else if (player2Y + paddleHeight > canvas.height) {
+                    player2Y = canvas.height - paddleHeight;
+                }
+    
+                if (ballX - ballSize / 2 <= 0) {
+                    player2Score++;
+                    if (player2Score >= 5) {
+                        endGame("Player 2");
+                    } else {
+                        reset();
+                    }
+                } else if (ballX + ballSize / 2 >= canvas.width) {
+                    player1Score++;
+                    if (player1Score >= 5) {
+                        endGame("Player 1");
+                    } else {
+                        reset();
+                    }
+                }
+            }
+    
+            requestAnimationFrame(draw);
+        }
+    
+        function reset() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+            ballSpeedX = -ballSpeedX;
+            ballSpeedY = Math.random() > 0.5 ? -5 : 5;
+            player1Y = canvas.height / 2 - paddleHeight / 2;
+            player2Y = canvas.height / 2 - paddleHeight / 2;
+        }
+    
+        function endGame(winner) {
+            gameIsOver = true;
+            player1Score = 0;
+            player2Score = 0;
+            gameIsOver = false;
+        }
+    
+        const keyState = {};
+        window.addEventListener("keydown", function(event) {
+            keyState[event.keyCode || event.which] = true;
+        });
+        window.addEventListener("keyup", function(event) {
+            keyState[event.keyCode || event.which] = false;
+        });
+    
+        // Button click event listener
+        document.getElementById("resultButton").addEventListener("click", function() {
+            if (gameIsOver) {
+                // Display result if game is over
+                alert("Player 1: " + player1Score + "\nPlayer 2: " + player2Score);
+    
+            }
+        });
+    
+        draw();
+    });
+    </script>
+    <button id="resultButton" style="display: none;">Show Result</button>
+</body>
+</html>
